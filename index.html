@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For JO</title>
+<style>
+  body, html {
+    background-color: black;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 160vh; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  /* 1. SIDE ARROW BUTTON */
+  #verses-btn {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 60px;
+    background: rgba(255, 51, 133, 0.2);
+    border: 2px solid #ff3385;
+    border-right: none;
+    border-radius: 15px 0 0 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+    box-shadow: -5px 0 15px rgba(255, 51, 133, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .arrow-icon {
+    width: 24px;
+    height: 24px;
+    fill: #ff3385;
+    filter: drop-shadow(0 0 5px #ff3385);
+    animation: nudge 2s infinite ease-in-out;
+  }
+
+  @keyframes nudge {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-5px); }
+  }
+
+  #verses-btn:hover { background: #ff3385; }
+  #verses-btn:hover .arrow-icon { fill: black; filter: none; }
+
+  /* 2. THE HEADER */
+  header {
+    margin-top: 60px;
+    text-align: center;
+    transition: opacity 0.8s ease;
+  }
+
+  header h1 {
+    font-size: 2.5rem;
+    color: #ff3385;
+    text-shadow: 0 0 15px #ff3385;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+  }
+
+  /* 3. THE HEART AREA */
+  #heart-area {
+    position: relative;
+    width: 100%;
+    height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease;
+  }
+
+  .text-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: #ff3385;
+    font-weight: bold;
+    white-space: nowrap;
+    text-shadow: 0 0 10px #ff3385, 0 0 20px #ff0066;
+    user-select: none;
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* 4. MAIN ACTION BUTTON */
+  .button-wrapper {
+    margin-top: 450px; 
+    margin-bottom: 150px;
+  }
+
+  .action-btn {
+    padding: 18px 55px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background: rgba(255, 51, 133, 0.1);
+    border: 2px solid #ff3385;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 20px #ff3385;
+    transition: all 0.3s ease;
+  }
+
+  .action-btn:hover {
+    background: #ff3385;
+    box-shadow: 0 0 45px #ff3385;
+  }
+
+  /* 5. SIDE PANEL */
+  #bible-verses-panel {
+    position: fixed;
+    right: -100%; 
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    padding: 60px 30px;
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(15px);
+    border-left: 2px solid #ff3385;
+    box-sizing: border-box;
+    color: #eee;
+    overflow-y: auto;
+    z-index: 1500;
+    transition: right 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  #bible-verses-panel.active { right: 0; }
+  .verse-item { margin-bottom: 25px; line-height: 1.6; font-size: 15px; }
+  .verse-ref { color: #ff3385; font-weight: bold; display: block; margin-bottom: 4px; }
+
+  /* 6. FINAL MESSAGE PANEL */
+  #scene-message {
+    position: fixed;
+    width: 90%;
+    max-width: 500px;
+    padding: 50px;
+    background: rgba(10, 10, 10, 0.98);
+    border: 1px solid #ff3385;
+    border-radius: 25px;
+    color: white;
+    text-align: center;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+    top: 50%;
+    left: 50%;
+    transition: all 0.8s ease;
+    z-index: 1000;
+    pointer-events: none;
+    box-sizing: border-box;
+  }
+
+  #scene-message.active { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: all; }
+  .fade-out { opacity: 0 !important; pointer-events: none !important; }
+</style>
+</head>
+<body>
+
+  <header id="header">
+    <h1>PRESS BUTTON</h1>
+    <p style="color: #444; margin-top: 10px;">Scroll down...</p>
+  </header>
+
+  <div id="heart-area"></div>
+
+  <div class="button-wrapper" id="btn-wrap">
+    <button id="click-btn" class="action-btn">CLICK ME</button>
+  </div>
+
+  <button id="verses-btn" title="Bible Verses">
+    <svg class="arrow-icon" viewBox="0 0 24 24">
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </button>
+
+  <div id="bible-verses-panel">
+    <button style="background:none; border:none; color:#ff3385; font-size:30px; cursor:pointer; position:absolute; top:20px; left:20px;" id="close-verses">×</button>
+    <h2 style="color:#ff3385; text-align:center; margin-top: 20px;">FAVORITE MOMENTS</h2>
+    <img src="0a683dc6-fa41-4872-b374-ab2e74eaf53d.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 1" />
+    <img src="138fadc7-02c3-494f-a54c-9520a9e9d805.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 2" />
+    <img src="33bdec44-d852-40e3-8346-54d7788a2c7d.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 3" />
+    <img src="38491e3f-fff7-47c1-9ff8-a1e8312e910e.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 4" />
+    <img src="44b2fd4f-6b8a-4691-be90-dec7f8d10bf3.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 5" />
+    <img src="4a2cd12d-21b5-4a62-9478-471a87c786cb.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 6" />
+    <img src="54ecdaeb-f80b-4542-8b84-1a1b9b76e347.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 7" />
+    <img src="851525a0-98e1-47db-8584-2ef96052602e.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 8" />
+    <img src="888cbe3b-6c2d-45ad-a35f-268d6f666e2c.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 9" />
+    <img src="8b9a676c-8c51-4503-adb1-1be84fc65ad6.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 10" />
+    <img src="8c9559d3-24f4-40ef-aaa6-f70d3849da90.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 11" />
+    <img src="9eb9d3b4-1ecb-4751-9aa0-2063349de6a9.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 12" />
+    <img src="9ff9a10a-48e1-4762-a796-4b341362cf7c.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 13" />
+    <img src="bf0e253f-f298-41f7-8ef1-f132ff4637f1.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 14" />
+    <img src="c5e6cace-4e55-465c-8ca0-c974ea7e16c8.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 15" />
+    <img src="c7cf8641-8a16-40eb-af2b-527b9ac1736d.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 16" />
+    <img src="ef0d52e4-fa29-4780-8276-37b965e485e9.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 17" />
+    <img src="efcba88a-763f-4650-aaca-fe738d87f6fb.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 18" />
+    <img src="f476a1c5-0884-418b-8a81-59dbde2cffe3.jpg" style="width:100%; margin-bottom:10px;" alt="Photo 19" />
+  </div>
+
+  <div id="scene-message">
+    <h2 style="color:#ff3385;">Dear jo</h2>
+    <p style="text-align: justify;">I miss you soo muchh jo, I know that I may be overreacting when I say it but not a day goes by that I don’t think of you. Sometimes I wish that you’re here by my side because you make things better. No matter what I do to distract myself but I still crave your presence. 
+
+All I want to say is – From my bottom of my heart, I just want you to know that I’ll always love and I appreciate you. I know I say it a lot but I hope you don’t get tired of me saying “I love you”. You bring so much joy into my life and I want to spend life together with you. I know I’m still not the person that I promised you that I’m gonna be, but I’m gonna keep improving and changing myself for the better because I don’t want you finding another man that you’ll be spending you future. I’m sorry if I make mistakes and some of it I’m not even aware of, and I’m sorry for overthinking sometimes because I’m just scared that someday you’ll leave me. I know I’m not good with words but trust me when I say this, you’re more than enough and more than I could ever ask for niellang. I want us to be better for us and for ourselves. Remember that I’m always
+here to support you, listens to you, care for you, remind you to eat and drink water, and to love you through your highs and lows. I love you so much jo.</p>
+    <button style="background:none; border:1px solid #ff3385; color:#ff3385; padding:10px 25px; cursor:pointer; border-radius:30px; font-weight:bold; margin-top: 20px;" id="back-btn">Back</button>
+  </div>
+
+  <audio id="ridleys-song" loop>
+    <source src="BeWithYou.mp3" type="audio/mpeg">
+  </audio>
+
+<script>
+  const heartArea = document.getElementById('heart-area');
+  const btn = document.getElementById('click-btn');
+  const versesBtn = document.getElementById('verses-btn');
+  const versesPanel = document.getElementById('bible-verses-panel');
+  const song = document.getElementById('ridleys-song');
+  const phrase = "I miss you JO";
+  const particles = [];
+
+  // --- THE MUSIC FORCE-PLAY LOGIC ---
+  // Browsers block autoplay. This function triggers on ANY interaction.
+  function forcePlay() {
+    if (song) {
+      song.play().then(() => {
+        // Success! Remove listeners so we don't restart it
+        console.log("Music started!");
+        window.removeEventListener('click', forcePlay);
+        window.removeEventListener('touchstart', forcePlay);
+        window.removeEventListener('scroll', forcePlay);
+        window.removeEventListener('keydown', forcePlay);
+      }).catch(e => console.log("Waiting for interaction..."));
+    }
+  }
+
+  // Listen for EVERYTHING. As soon as the user scrolls or touches, song plays.
+  window.addEventListener('click', forcePlay);
+  window.addEventListener('touchstart', forcePlay);
+  window.addEventListener('scroll', forcePlay);
+  window.addEventListener('keydown', forcePlay);
+
+  // --- HEART ANIMATION ---
+  for (let i = 0; i < 100; i++) {
+    const el = document.createElement('div');
+    el.className = 'text-particle';
+    el.innerText = phrase;
+    el.style.fontSize = (11 + Math.random() * 8) + 'px';
+    heartArea.appendChild(el);
+    particles.push({ el: el, offset: (i / 100) * Math.PI * 2 });
+  }
+
+  let time = 0;
+  function animate() {
+    time += 0.003;
+    particles.forEach((p) => {
+      const t = p.offset + time;
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+      p.el.style.transform = `translate(${x * 18}px, ${y * 18}px) translate(-50%, -50%)`;
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // --- UI BUTTONS ---
+  btn.addEventListener('click', () => {
+    document.getElementById('header').classList.add('fade-out');
+    heartArea.classList.add('fade-out');
+    document.getElementById('btn-wrap').classList.add('fade-out');
+    versesBtn.classList.add('fade-out');
+    setTimeout(() => { window.scrollTo(0, 0); document.getElementById('scene-message').classList.add('active'); }, 600);
+  });
+
+  versesBtn.addEventListener('click', () => versesPanel.classList.add('active'));
+  document.getElementById('close-verses').addEventListener('click', () => versesPanel.classList.remove('active'));
+
+  document.getElementById('back-btn').addEventListener('click', () => {
+    document.getElementById('scene-message').classList.remove('active');
+    document.getElementById('header').classList.remove('fade-out');
+    heartArea.classList.remove('fade-out');
+    document.getElementById('btn-wrap').classList.remove('fade-out');
+    versesBtn.classList.remove('fade-out');
+    window.scrollTo(0, 0);
+  });
+</script>
+
+</body>
+</html>
